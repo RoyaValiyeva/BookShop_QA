@@ -1,0 +1,40 @@
+name: QA Docs CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  validate-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check folder structure
+        run: |
+          set -e
+          for d in Bugs Screenshots TestCases ; do
+            if [ ! -d "$d" ]; then
+              echo "::error::$d folder is missing"; exit 1
+            fi
+          done
+          echo "Folder structure OK"
+
+      - name: Markdown lint
+        uses: avto-dev/markdown-lint@v1
+        with:
+          args: "**/*.md"
+
+      - name: Package deliverables
+        run: |
+          mkdir -p out
+          zip -r "out/QA_Package_${GITHUB_SHA::7}.zip" Bugs Screenshots TestCases *.md || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QA_Package
+          path: out/*.zip
