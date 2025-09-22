@@ -16,7 +16,7 @@ jobs:
       - name: Check folder structure
         run: |
           set -e
-          for d in Bugs Screenshots TestCases ; do
+          for d in bugs screenshots testcases ; do
             if [ ! -d "$d" ]; then
               echo "::error::$d folder is missing"; exit 1
             fi
@@ -31,7 +31,7 @@ jobs:
       - name: Package deliverables
         run: |
           mkdir -p out
-          zip -r "out/QA_Package_${GITHUB_SHA::7}.zip" Bugs Screenshots TestCases *.md || true
+          zip -r "out/QA_Package_${GITHUB_SHA::7}.zip" bugs screenshots testcases *.md || true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
